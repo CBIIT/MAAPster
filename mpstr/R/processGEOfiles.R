@@ -74,7 +74,7 @@ processGEOfiles <- function(projectId,id,listGroups,listBatches=NULL,workspace,c
     )
   }
   gds = check_GSE_2(id)
-  if(class(gds)=='character') return(gds)
+  if(inherits(gds, 'character')) return(gds)
   
   SampleName = list.files(path = workspace, pattern = '/*CEL.gz|/*CEL$', ignore.case = T, full.names=T)
   

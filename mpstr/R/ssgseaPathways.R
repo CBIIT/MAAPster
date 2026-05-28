@@ -46,7 +46,7 @@ ssgseaPathways = function(deg_normAnnot, species, geneSet,workspace,projectId,co
   }
   getSet = paste0(configuration_path,'/',getSet)
   gset = getGmt(getSet)
-  ssgsResults = gsva(ssgs, gset, method='ssgsea')                           #run ssGSEA
+  ssgsResults = gsva(ssgseaParam(ssgs, gset))                               #run ssGSEA (GSVA v2 API)
   y<-paste("_",projectId, sep="")                                           #write out results
   tSS = tempfile(pattern = "ssGSEA_enrichmentScores_", tmpdir =workspace, fileext = paste0(y,'.txt'))
   write.table(ssgsResults,file=tSS,sep="\t",col.names=NA)
