@@ -63,7 +63,10 @@ ssgseaPathways = function(deg_normAnnot, species, geneSet,workspace,projectId,co
   {
     all.pathways = topTable(ebayes.fit2, coef=i, number=nrow(ebayes.fit2))                                                               #Determine DE pathways
     all.pathways = all.pathways[order(abs(all.pathways$P.Value)),]
-    colnames(all.pathways)[2] = 'Avg.Enrichment.Score'
+    colnames(all.pathways)[colnames(all.pathways) == 'AveExpr'] = 'Avg.Enrichment.Score'
+    colnames(all.pathways)[colnames(all.pathways) == 'adj.P.Value'] = 'adj.P.Val'
+    colnames(all.pathways)[colnames(all.pathways) == 'b'] = 'B'
+    all.pathways = all.pathways[, c('logFC', 'Avg.Enrichment.Score', 't', 'P.Value', 'adj.P.Val', 'B')]
     write.table(all.pathways,file=paste0(workspace,'/',projectId,"_",cons[i],"_ssGSEA_pathways.txt"),sep="\t",row.names=T,col.names=NA)
     DEss[[i]] = all.pathways
   }
