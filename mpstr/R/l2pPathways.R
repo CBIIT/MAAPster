@@ -14,6 +14,7 @@
 
 l2pPathways = function(degs,species,workspace,projectId,configuration_path) {
   library(l2p)
+  library(l2psupp)
 
   l2pPathways_ERR = file(paste0(workspace,'/l2pPathways.err'),open='wt')
   sink(l2pPathways_ERR,type='message',append=TRUE)
