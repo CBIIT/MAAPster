@@ -180,16 +180,23 @@ processGEOfiles <- function(projectId,id,listGroups,listBatches=NULL,workspace,c
   rownames(pd) = parsedNames
   pd = AnnotatedDataFrame(pd)
   
+  # select the CEL files that will be read (subset by chip for multi-chip datasets)
   if (length(gds@gpls) == 1) {
-    celfiles = read.celfiles(SampleName,phenoData = pd, verbose=TRUE)
+    celForCheck = SampleName
   } else {
-    celfiles = read.celfiles(SampleName[gsub('(_|\\.).*','',basename(SampleName)) %in% names(shortList)], phenoData = pd, verbose = TRUE)
+    celForCheck = SampleName[gsub('(_|\\.).*','',basename(SampleName)) %in% names(shortList)]
   }
-  
-  # check if supported Affymetrix chip
-  if (!celfiles@annotation%in%listPlatforms) {
-    return(paste0('Your Affymetrix platform ',celfiles@annotation,' is not yet supported.  You may request to have it added by contacting NCIMicroArrayWebAdmin@mail.nih.gov.'))
+
+  # check if supported Affymetrix chip BEFORE calling read.celfiles(). read.celfiles() must load the
+  # platform's pd.* package, which fails for chips whose package is not published/installed
+  # (e.g. PrimeView / pd.primeview) and would otherwise surface as an opaque run-time error instead
+  # of this standard "not yet supported" message. Read the platform from the CEL header instead.
+  platformName = oligo::cleanPlatformName(affyio::read.celfile.header(celForCheck[1])$cdfName)
+  if (!platformName %in% listPlatforms) {
+    return(paste0('Your Affymetrix platform ',platformName,' is not yet supported.  You may request to have it added by contacting NCIMicroArrayWebAdmin@mail.nih.gov.'))
   }
+
+  celfiles = read.celfiles(celForCheck, phenoData = pd, verbose = TRUE)
   
   if (is.null(listBatches)) {
     tableNames=c("gsm","title","description","groups")
